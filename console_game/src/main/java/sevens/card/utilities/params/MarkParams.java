@@ -13,7 +13,7 @@ public enum MarkParams {
     /**
      * マークを表す
      */
-    private final String mark;
+    private String mark;
 
     /**
      * コンストラクタ
@@ -28,7 +28,7 @@ public enum MarkParams {
      * markフィールドのゲッター
      * 
      * @param
-     * @return int
+     * @return {@link String}
      */
     public String getMark() {
         return this.mark;

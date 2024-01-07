@@ -22,7 +22,7 @@ public enum NumberParams {
     /**
      * 数字を表す
      */
-    private final int number;
+    private int number;
 
     /**
      * コンストラクタ

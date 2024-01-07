@@ -18,34 +18,31 @@ import utilities.exceptions.SystemException;
  */
 public class CardFactory {
     /**
-     * 山を表すフィールド
-     */
-    private static List<Card> deck;
-
-    /**
-     * 山を初期化する
+     * 山を初期化して返す
      * 
      * @param
      * @throws SystemException 不明なエラーが発生した場合にスローする
-     * @return
+     * @return {@link List <{@link Card}>
      */
-    private static void initialize() throws SystemException {
+    private static List<Card> initialize() throws SystemException {
         try {
+            List<Card> deck = new ArrayList<>();
             List<MarkParams> markList = new ArrayList<>(Arrays.asList(MarkParams.values()));
             List<NumberParams> numberList = new ArrayList<>(Arrays.asList(NumberParams.values()));
             MarkParams JOKER_MARK = markList.get(0);
             NumberParams JOKER_NUMBER = numberList.get(0);
             markList.remove(0);
             numberList.remove(0);
-            CardFactory.deck.clear();
 
             for (MarkParams mark : markList) {
                 for (NumberParams number : numberList) {
-                    CardFactory.deck.add(new Card(number.getNumber(), mark.getMark()));
+                    deck.add(new Card(number.getNumber(), mark.getMark()));
                 }
             }
 
-            CardFactory.deck.add(new Card(JOKER_NUMBER.getNumber(), JOKER_MARK.getMark()));
+            deck.add(new Card(JOKER_NUMBER.getNumber(), JOKER_MARK.getMark()));
+
+            return deck;
         } catch (NullPointerException | IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
                 | IllegalArgumentException e) {
             throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
@@ -55,33 +52,17 @@ public class CardFactory {
     /**
      * 山をシャフルする
      * 
-     * @param
+     * @param deck
      * @throws SystemException 不明なエラーが発生した場合にスローする
-     * @return
+     * @return {@link List <{@link Card}>
      */
-    private static void suffle() throws SystemException {
+    private static void suffle(List<Card> deck) throws SystemException {
         try {
-            Collections.shuffle(CardFactory.deck);
+            Collections.shuffle(deck);
         } catch (UnsupportedOperationException e) {
             throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
         }
 
-    }
-
-    /**
-     * 山をシャフルする
-     * シード値を指定する場合に使用する
-     * 
-     * @param seed
-     * @throws SystemException 不明なエラーが発生した場合にスローする
-     * @return
-     */
-    private static void suffle(long seed) throws SystemException {
-        try {
-            Collections.shuffle(CardFactory.deck, new Random(seed));
-        } catch (UnsupportedOperationException e) {
-            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
-        }
     }
 
     /**
@@ -92,8 +73,8 @@ public class CardFactory {
      * @throws SystemException 不明なエラーが発生した場合にスローする
      */
     public static List<Card> getDeck() throws SystemException {
-        CardFactory.initialize();
-        CardFactory.suffle();
-        return CardFactory.deck;
+        List<Card> deck = CardFactory.initialize();
+        CardFactory.suffle(deck);
+        return deck;
     }
 }
