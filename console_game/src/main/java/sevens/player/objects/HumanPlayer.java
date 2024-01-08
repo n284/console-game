@@ -9,6 +9,9 @@ import utilities.Keyboard;
 import utilities.MessageLoader;
 import utilities.exceptions.SystemException;
 
+/**
+ * 人間プレイヤーを表すクラス
+ */
 public class HumanPlayer implements Player {
     /**
      * 名前を表す
@@ -111,14 +114,23 @@ public class HumanPlayer implements Player {
                 }
             }
             if (cardList.size() > 0) {
+                this.printHand(candidatingCardList);
+                System.out.println(MessageLoader.loadMessage("sevens.pass.question", this.passNum));
+                if (Keyboard.inputInt(0, 1) == 1) {
+                    this.pass();
+
+                    return null;
+                }
                 while (true) {
                     int index = Keyboard.inputInt(1, this.hand.size()) - 1;
                     Card card = this.hand.get(index);
                     if (cardList.contains(card)) {
                         this.hand.remove(index);
+                        candidatingCardList.remove(card);
+
                         return card;
                     } else {
-                        System.out.println("選んだカードは出せるカードではありません");
+                        System.out.println(MessageLoader.loadMessage("sevens.error.not.select"));
                     }
                 }
             } else {
@@ -153,14 +165,22 @@ public class HumanPlayer implements Player {
      */
     public void printHand(List<Card> cardList) throws SystemException {
         try {
+            System.out.print("マーク\t");
             for (Card card : this.hand) {
                 System.out.print(card.getMark().getValue() + "\t");
             }
             System.out.println();
+            System.out.print("数字\t");
             for (Card card : this.hand) {
                 System.out.print(card.getNumber().getValue() + "\t");
             }
             System.out.println();
+            System.out.print("番号\t");
+            for (int i = 1; i <= this.hand.size(); i++) {
+                System.out.print(i + "\t");
+            }
+            System.out.println();
+            System.out.print("可能\t");
             for (Card card : this.hand) {
                 if (cardList.contains(card)) {
                     System.out.print("〇\t");

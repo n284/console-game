@@ -4,11 +4,11 @@ package sevens.card.utilities.params;
  * トランプのマークを管理する列挙型
  */
 public enum Mark {
-    SPADE("♠"),
-    CLUB("♣"),
-    HEART("♥"),
-    DAIAMOND("♦"),
-    JOKER("★");
+    SPADE("S"),
+    CLUB("C"),
+    HEART("H"),
+    DAIAMOND("D"),
+    JOKER("J");
 
     /**
      * マークを表す

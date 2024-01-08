@@ -9,6 +9,9 @@ import sevens.player.utilities.interfaces.Player;
 import utilities.MessageLoader;
 import utilities.exceptions.SystemException;
 
+/**
+ * CPUを表すクラス
+ */
 public class CPUPlayer implements Player {
     /**
      * 名前を表す
@@ -67,9 +70,10 @@ public class CPUPlayer implements Player {
                 }
             }
             if (indexList.size() > 0) {
-                int index = new Random().nextInt(indexList.size());
+                int index = indexList.get(new Random().nextInt(indexList.size()));
                 Card card = this.hand.get(index);
                 this.hand.remove(index);
+                candidatingCardList.remove(card);
 
                 return card;
             } else {

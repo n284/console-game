@@ -46,8 +46,9 @@ public class PlayerFactory {
      */
     private static void createCPUPlayer(List<Player> playerList) throws SystemException {
         System.out.println(MessageLoader.loadMessage("sevens.input.cpu"));
-        for (int i = 0; i < Keyboard.inputInt(1,
-                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max ")) - playerList.size()); i++) {
+        int number = Keyboard.inputInt(1,
+                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max")) - playerList.size());
+        for (int i = 0; i < number; i++) {
             playerList.add(new CPUPlayer(MessageLoader.loadMessage("sevens.name.cpu", i + 1)));
         }
     }
@@ -61,8 +62,9 @@ public class PlayerFactory {
      */
     private static void createHumanPlayer(List<Player> playerList) throws SystemException {
         System.out.println(MessageLoader.loadMessage("sevens.input.human"));
-        for (int i = 0; i < Keyboard.inputInt(1,
-                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max ")) - playerList.size()); i++) {
+        int number = Keyboard.inputInt(1,
+                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max")) - playerList.size());
+        for (int i = 0; i < number; i++) {
             System.out.println(MessageLoader.loadMessage("sevens.name.human", i + 1));
             playerList.add(new HumanPlayer(Keyboard.inputString()));
         }

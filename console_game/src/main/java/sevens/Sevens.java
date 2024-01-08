@@ -3,11 +3,15 @@ package sevens;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import sevens.card.CardFactory;
 import sevens.card.objects.Card;
 import sevens.player.PlayerFactory;
+import sevens.player.objects.CPUPlayer;
+import sevens.player.objects.HumanPlayer;
 import sevens.player.utilities.interfaces.Player;
 import sevens.card.utilities.params.Mark;
 import sevens.card.utilities.params.Number;
@@ -54,7 +58,11 @@ public class Sevens implements Game {
         this.initializeLayout();
 
         while (!this.playerList.isEmpty()) {
-            for (Player player : this.playerList) {
+            Iterator<Player> itr = this.playerList.iterator();
+            while (itr.hasNext()) {
+                Player player = itr.next();
+                System.out.println();
+                System.out.println(MessageLoader.loadMessage("sevens.turn", player.getName()));
                 this.seekCandidatingCard();
                 this.printLayout();
                 Card pullOutCard = player.selectCard(this.candidatingCardList);
@@ -62,60 +70,70 @@ public class Sevens implements Game {
                 if (pullOutCard == null) {
                     if (player.getPassNum() == 0) {
                         for (Card card : player.getHand()) {
-                            this.layout.get(card.getMark())[card.getNumber().getValue() - 1] = card;
+                            if (!card.equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
+                                this.layout.get(card.getMark())[card.getNumber().getValue() - 1] = card;
+                            }
                         }
                         player.getHand().clear();
                     } else if (player.getPassNum() < 0) {
                         throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
                     }
                 } else if (pullOutCard.equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
-                    System.out.println(MessageLoader.loadMessage("sevens.select.joker"));
-                    for (int i = 1; i <= this.candidatingCardList.size(); i++) {
-                        System.out.print(i + "\t");
+                    if (player instanceof HumanPlayer) {
+                        System.out.println(MessageLoader.loadMessage("sevens.select.joker"));
+                        for (Card card : this.candidatingCardList) {
+                            System.out.print(card.getMark().getValue() + "\t");
+                        }
+                        System.out.println();
+                        for (Card card : this.candidatingCardList) {
+                            System.out.print(card.getNumber().getValue() + "\t");
+                        }
+                        System.out.println();
+                        for (int i = 1; i <= this.candidatingCardList.size(); i++) {
+                            System.out.print(i + "\t");
+                        }
+                        System.out.println();
+                        int index = Keyboard.inputInt(1, this.candidatingCardList.size());
+                        this.layout.get(pullOutCard.getMark())[index] = pullOutCard;
+                    } else {
+                        System.out.println(MessageLoader.loadMessage("sevens.select.joker"));
+                        int index = new Random().nextInt(0, this.candidatingCardList.size());
+                        this.layout.get(pullOutCard.getMark())[index] = pullOutCard;
                     }
-                    for (Card card : this.candidatingCardList) {
-                        System.out.print(card.getMark().getValue() + "\t");
-                    }
-                    System.out.println();
-                    for (Card card : this.candidatingCardList) {
-                        System.out.print(card.getNumber().getValue() + "\t");
-                    }
-                    int index = Keyboard.inputInt(1, this.candidatingCardList.size());
-                    this.layout.get(pullOutCard.getMark())[index] = pullOutCard;
                 } else {
-                    if (this.layout.get(pullOutCard.getMark())[pullOutCard.getNumber().getValue() - 1]
-                            .equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
+                    if (this.layout.get(pullOutCard.getMark())[pullOutCard.getNumber().getValue() - 1] != null &&
+                            this.layout.get(pullOutCard.getMark())[pullOutCard.getNumber().getValue() - 1]
+                                    .equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
                         player.getHand().add(
                                 this.layout.get(pullOutCard.getMark())[pullOutCard.getNumber().getValue() - 1]);
                     }
                     this.layout.get(pullOutCard.getMark())[pullOutCard.getNumber().getValue() - 1] = pullOutCard;
                 }
-                this.finish(player);
+                if (player.isFinished()) {
+                    this.order.put(this.playerList.size(), player);
+                    itr.remove();
+                    if (this.playerList.size() == 1) {
+                        this.order.put(1, this.playerList.get(0));
+                    }
+                }
             }
         }
+        this.printLayout();
+        this.printOrder();
     }
 
     /**
-     * プレイヤーのターン終了処理をする
+     * 順位を表示する
      * 
-     * @param player
-     * @return
+     * @param
      * @throws SystemException 不明なエラーが発生した場合にスローする
+     * @return
      */
-    private void finish(Player player) throws SystemException {
-        try {
-            if (player.isFinished()) {
-                this.order.put(this.playerList.size(), player);
-                this.playerList.remove(player);
-                if (this.playerList.size() == 1) {
-                    this.order.put(1, this.playerList.get(0));
-                    this.playerList.remove(0);
-                }
-            }
-        } catch (IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
-                | NullPointerException e) {
-            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
+    private void printOrder() throws SystemException {
+        for (int i = 1; i <= this.order.size(); i++) {
+            System.out.println(MessageLoader.loadMessage("sevens.winner", i, this.order.get(i).getName()));
         }
+        System.out.println();
     }
 
     /**
@@ -127,6 +145,10 @@ public class Sevens implements Game {
      */
     private void seekCandidatingCard() throws SystemException {
         try {
+            Card joker = this.allCards.get(Mark.JOKER).get(Number.JOKER);
+            if (!this.candidatingCardList.contains(joker)) {
+                this.candidatingCardList.add(joker);
+            }
             for (Mark mark : Mark.values()) {
                 if (!mark.equals(Mark.JOKER)) {
                     for (int left = 6; left >= 0; left--) {
@@ -135,10 +157,11 @@ public class Sevens implements Game {
                             if (!this.candidatingCardList.contains(card)) {
                                 this.candidatingCardList.add(card);
                             }
-                        } else if (this.layout.get(mark)[left]
-                                .equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
+                            break;
+                        } else if (this.layout.get(mark)[left].equals(joker)) {
                             if (!this.candidatingCardList.contains(card)) {
                                 this.candidatingCardList.add(card);
+                                this.candidatingCardList.remove(joker);
                             }
                         } else {
                             if (this.candidatingCardList.contains(card)) {
@@ -152,10 +175,11 @@ public class Sevens implements Game {
                             if (!this.candidatingCardList.contains(card)) {
                                 this.candidatingCardList.add(card);
                             }
-                        } else if (this.layout.get(mark)[right]
-                                .equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
+                            break;
+                        } else if (this.layout.get(mark)[right].equals(joker)) {
                             if (!this.candidatingCardList.contains(card)) {
                                 this.candidatingCardList.add(card);
+                                this.candidatingCardList.remove(joker);
                             }
                         } else {
                             if (this.candidatingCardList.contains(card)) {
@@ -179,16 +203,19 @@ public class Sevens implements Game {
      */
     private void printLayout() {
         for (Mark mark : this.layout.keySet()) {
-            System.out.print(mark.getValue());
-            for (Card card : this.layout.get(mark)) {
-                if (card == null) {
-                    System.out.print("\t□");
-                } else {
-                    System.out.print("\t" + card.getNumber().getValue());
+            if (!mark.equals(Mark.JOKER)) {
+                System.out.print(mark.getValue());
+                for (Card card : this.layout.get(mark)) {
+                    if (card == null) {
+                        System.out.print("\t□");
+                    } else {
+                        System.out.print("\t" + card.getNumber().getValue());
+                    }
                 }
+                System.out.println();
             }
-            System.out.println();
         }
+        System.out.println();
     }
 
     /**
@@ -200,6 +227,7 @@ public class Sevens implements Game {
     private void initialize() {
         this.playerList = new ArrayList<>();
         this.candidatingCardList = new ArrayList<>();
+        this.order = new HashMap<>();
         this.layout = new HashMap<>();
         this.allCards = new HashMap<>();
 
@@ -221,7 +249,6 @@ public class Sevens implements Game {
             for (Player player : this.playerList) {
                 List<Card> hand = player.getHand();
                 for (int i = 0; i < hand.size(); i++) {
-
                     Card card = hand.get(i);
                     if (card.getNumber().equals(Number.SEVEN)) {
                         Mark mark = Mark.getEnum(card.getMark().getValue());
@@ -274,11 +301,14 @@ public class Sevens implements Game {
                 for (List<Card> hand : handList) {
                     hand.add(deck.get(0));
                     deck.remove(0);
+                    if (deck.size() == 0) {
+                        break;
+                    }
                 }
             }
             Collections.shuffle(handList);
             for (int i = 0; i < this.playerList.size(); i++) {
-                this.playerList.get(i).setHand(handList.get(0));
+                this.playerList.get(i).setHand(handList.get(i));
             }
         } catch (IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
                 | NullPointerException | IllegalArgumentException e) {

@@ -28,17 +28,15 @@ public class CardFactory {
             List<Card> deck = new ArrayList<>();
             List<Mark> markList = new ArrayList<>(Arrays.asList(Mark.values()));
             List<Number> numberList = new ArrayList<>(Arrays.asList(Number.values()));
-            Mark JOKER_MARK = markList.get(markList.size() - 1);
-            Number JOKER_NUMBER = numberList.get(numberList.size() - 1);
-            markList.remove(markList.size() - 1);
-            numberList.remove(numberList.size() - 1);
+            markList.remove(Mark.JOKER);
+            numberList.remove(Number.JOKER);
 
             for (Mark mark : markList) {
                 for (Number number : numberList) {
                     deck.add(new Card(number, mark));
                 }
             }
-            deck.add(new Card(JOKER_NUMBER, JOKER_MARK));
+            deck.add(new Card(Number.JOKER, Mark.JOKER));
 
             return deck;
         } catch (NullPointerException | IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
