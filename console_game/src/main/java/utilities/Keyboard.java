@@ -47,7 +47,7 @@ public class Keyboard {
             throw new SystemException(300, MessageLoader.loadMessage("error.fromto"));
         }
         while (true) {
-            System.out.println(MessageLoader.loadMessage("input.range", from, to));
+            // System.out.println(MessageLoader.loadMessage("input.range", from, to));
             int number = Keyboard.inputInt();
 
             if (from <= number && number <= to) {

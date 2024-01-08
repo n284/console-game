@@ -22,7 +22,7 @@ public class Menu {
             while (true) {
                 System.out.print(MessageLoader.loadMessage("menu.select"));
                 while (true) {
-                    switch (Keyboard.inputInt(1, 2)) {
+                    switch (Keyboard.inputInt(1, 1)) {
                         case 1: {
                             game = new Sevens();
                             break;
@@ -34,8 +34,10 @@ public class Menu {
                     break;
                 }
                 game.run();
+                System.out.println(MessageLoader.loadMessage("menu.continue"));
                 continued = Keyboard.inputInt(0, 1);
                 if (continued == 1) {
+                    System.out.println();
                     continue;
                 } else if (continued == 0) {
                     System.out.println(MessageLoader.loadMessage("menu.finish"));
