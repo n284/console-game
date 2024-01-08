@@ -3,6 +3,7 @@ package utilities;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import utilities.exceptions.SystemException;
@@ -12,7 +13,7 @@ import utilities.exceptions.SystemException;
  */
 public class SettingLoader {
     /** application.propertiesが配置されているパス */
-    private static final String APPLICATION_PROPERTIES_PATH = "../../resources/application.properties";
+    private static final String APPLICATION_PROPERTIES_PATH = "./console_game/src/main/resources/application.properties";
 
     /** プロパティズ */
     private static Properties properties;
@@ -37,7 +38,8 @@ public class SettingLoader {
      */
     private static void setup() throws SystemException {
         try {
-            SettingLoader.properties.load(new FileInputStream(APPLICATION_PROPERTIES_PATH));
+            SettingLoader.properties
+                    .load(new InputStreamReader(new FileInputStream(APPLICATION_PROPERTIES_PATH), "UTF-8"));
             SettingLoader.setuped = true;
         } catch (SecurityException e) {
             throw new SystemException(500, "message.propertiesのセキュリティエラーが発生しました");
@@ -60,7 +62,7 @@ public class SettingLoader {
      * @throws SystemException 処理の中断が必要な場合にスローする
      */
     public static String loadSetting(String messageCode) throws SystemException {
-        if (SettingLoader.setuped) {
+        if (!SettingLoader.setuped) {
             SettingLoader.setup();
         }
 

@@ -3,6 +3,7 @@ package utilities;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.Properties;
 
@@ -13,7 +14,7 @@ import utilities.exceptions.SystemException;
  */
 public class MessageLoader {
     /** message.propertiesが配置されているパス */
-    private static final String MESSAGE_PROPERTIES_PATH = "../../resources/message.properties";
+    private static final String MESSAGE_PROPERTIES_PATH = "./console_game/src/main/resources/message.properties";
 
     /** プロパティズ */
     private static Properties properties;
@@ -38,7 +39,7 @@ public class MessageLoader {
      */
     private static void setup() throws SystemException {
         try {
-            MessageLoader.properties.load(new FileInputStream(MESSAGE_PROPERTIES_PATH));
+            MessageLoader.properties.load(new InputStreamReader(new FileInputStream(MESSAGE_PROPERTIES_PATH), "UTF-8"));
             MessageLoader.setuped = true;
         } catch (SecurityException e) {
             throw new SystemException(500, "message.propertiesのセキュリティエラーが発生しました");
@@ -61,7 +62,7 @@ public class MessageLoader {
      * @throws SystemException 処理の中断が必要な場合にスローする
      */
     public static String loadMessage(String messageCode) throws SystemException {
-        if (MessageLoader.setuped) {
+        if (!MessageLoader.setuped) {
             MessageLoader.setup();
         }
 
@@ -76,13 +77,13 @@ public class MessageLoader {
      * @return {@link String}
      * @throws SystemException 処理の中断が必要な場合にスローする
      */
-    public static String loadMessage(String messageCode, Integer... params) throws SystemException {
+    public static String loadMessage(String messageCode, Object... params) throws SystemException {
         if (MessageLoader.setuped) {
             MessageLoader.setup();
         }
 
         try {
-            return MessageFormat.format(MessageLoader.properties.getProperty(messageCode), (Object[]) params);
+            return MessageFormat.format(MessageLoader.properties.getProperty(messageCode), params);
         } catch (NullPointerException e) {
             throw new SystemException(500, "メッセージが取得できませんでした");
         } catch (IllegalArgumentException e) {
