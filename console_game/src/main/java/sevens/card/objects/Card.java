@@ -1,5 +1,8 @@
 package sevens.card.objects;
 
+import sevens.card.utilities.params.Mark;
+import sevens.card.utilities.params.Number;
+
 /**
  * トランプのカードを表すクラス
  */
@@ -7,12 +10,12 @@ public class Card {
     /**
      * カードの数字を表す
      */
-    private int number;
+    private Number number;
 
     /**
      * カードの絵柄を表す
      */
-    private String mark;
+    private Mark mark;
 
     /**
      * コンストラクタ
@@ -21,7 +24,7 @@ public class Card {
      * @param mark
      * 
      */
-    public Card(int number, String mark) {
+    public Card(Number number, Mark mark) {
         this.number = number;
         this.mark = mark;
     }
@@ -29,18 +32,20 @@ public class Card {
     /**
      * numberフィールドのゲッター
      * 
-     * @return int
+     * @param
+     * @return {@link Number}
      */
-    public int getNumber() {
+    public Number getNumber() {
         return this.number;
     }
 
     /**
      * markフィールドのゲッター
      * 
-     * @return int
+     * @param
+     * @return {@link Mark}
      */
-    public String getMark() {
+    public Mark getMark() {
         return this.mark;
     }
 }
