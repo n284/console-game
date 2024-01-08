@@ -5,7 +5,7 @@ import java.util.List;
 
 import sevens.card.objects.Card;
 import sevens.player.utilities.interfaces.Player;
-import utilities.Input;
+import utilities.Keyboard;
 import utilities.MessageLoader;
 import utilities.exceptions.SystemException;
 
@@ -112,7 +112,7 @@ public class HumanPlayer implements Player {
             }
             if (cardList.size() > 0) {
                 while (true) {
-                    int index = Input.inputInt(1, this.hand.size()) - 1;
+                    int index = Keyboard.inputInt(1, this.hand.size()) - 1;
                     Card card = this.hand.get(index);
                     if (cardList.contains(card)) {
                         this.hand.remove(index);
@@ -136,10 +136,11 @@ public class HumanPlayer implements Player {
      * 
      * @param
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
     @Override
-    public void pass() {
-        System.out.println("パスします");
+    public void pass() throws SystemException {
+        System.out.println(MessageLoader.loadMessage("sevens.pass"));
         this.passNum--;
     }
 
@@ -147,8 +148,8 @@ public class HumanPlayer implements Player {
      * 手札を表示する
      * 
      * @param cardList
-     * @throws SystemException 不明なエラーが発生した場合にスローする
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
     public void printHand(List<Card> cardList) throws SystemException {
         try {

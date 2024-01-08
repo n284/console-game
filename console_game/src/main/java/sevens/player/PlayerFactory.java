@@ -7,7 +7,9 @@ import java.util.List;
 import sevens.player.objects.CPUPlayer;
 import sevens.player.objects.HumanPlayer;
 import sevens.player.utilities.interfaces.Player;
-import utilities.Input;
+import utilities.Keyboard;
+import utilities.MessageLoader;
+import utilities.SettingLoader;
 import utilities.exceptions.SystemException;
 
 /**
@@ -15,6 +17,13 @@ import utilities.exceptions.SystemException;
  */
 public class PlayerFactory {
 
+    /**
+     * 七並べを行うプレイヤーを生成する
+     * 
+     * @param
+     * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
+     */
     public static List<Player> createPlayer() throws SystemException {
         List<Player> playerList = new ArrayList<>();
         PlayerFactory.createHumanPlayer(playerList);
@@ -22,8 +31,7 @@ public class PlayerFactory {
         if (playerList.size() < 4) {
             createCPUPlayer(playerList);
         }
-
-        System.out.println("順番をランダムで決めます");
+        System.out.println(MessageLoader.loadMessage("sevens.order.player"));
         Collections.shuffle(playerList);
 
         return playerList;
@@ -33,13 +41,14 @@ public class PlayerFactory {
      * CPUを生成する
      * 
      * @param playerList
-     * @throws SystemException
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
     private static void createCPUPlayer(List<Player> playerList) throws SystemException {
-        System.out.println("CPUの人数を入力してください");
-        for (int i = 0; i < Input.inputInt(1, 4 - playerList.size()); i++) {
-            playerList.add(new CPUPlayer("CPU_" + (i + 1)));
+        System.out.println(MessageLoader.loadMessage("sevens.input.cpu"));
+        for (int i = 0; i < Keyboard.inputInt(1,
+                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max ")) - playerList.size()); i++) {
+            playerList.add(new CPUPlayer(MessageLoader.loadMessage("sevens.name.cpu", i + 1)));
         }
     }
 
@@ -47,14 +56,15 @@ public class PlayerFactory {
      * プレイヤーを生成する
      * 
      * @param playerList
-     * @throws SystemException
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
     private static void createHumanPlayer(List<Player> playerList) throws SystemException {
-        System.out.println("操作するプレイヤーの人数を入力してください");
-        for (int i = 0; i < Input.inputInt(1, 4 - playerList.size()); i++) {
-            System.out.println("プレイヤー" + (i + 1) + "の名前を入力してください");
-            playerList.add(new HumanPlayer(Input.inputString()));
+        System.out.println(MessageLoader.loadMessage("sevens.input.human"));
+        for (int i = 0; i < Keyboard.inputInt(1,
+                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max ")) - playerList.size()); i++) {
+            System.out.println(MessageLoader.loadMessage("sevens.name.human", i + 1));
+            playerList.add(new HumanPlayer(Keyboard.inputString()));
         }
     }
 }

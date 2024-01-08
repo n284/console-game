@@ -8,12 +8,10 @@ import java.util.List;
 import sevens.card.CardFactory;
 import sevens.card.objects.Card;
 import sevens.player.PlayerFactory;
-import sevens.player.objects.CPUPlayer;
-import sevens.player.objects.HumanPlayer;
 import sevens.player.utilities.interfaces.Player;
 import sevens.card.utilities.params.Mark;
 import sevens.card.utilities.params.Number;
-import utilities.Input;
+import utilities.Keyboard;
 import utilities.MessageLoader;
 import utilities.exceptions.SystemException;
 import utilities.interfaces.Game;
@@ -22,47 +20,37 @@ import utilities.interfaces.Game;
  * 七並べのクラス
  */
 public class Sevens implements Game {
-    /**
-     * プレイヤーを保持する
-     */
+    /** プレイヤーを保持する */
     private List<Player> playerList;
 
-    /**
-     * 順位を保持する
-     */
+    /** 順位を保持する */
     private HashMap<Integer, Player> order;
 
-    /**
-     * 場を表す
-     */
+    /** 場を表す */
     private HashMap<Mark, Card[]> layout;
 
-    /**
-     * 全カードのオブジェクトを保持する
-     */
+    /** 全カードのオブジェクトを保持する */
     private HashMap<Mark, HashMap<Number, Card>> allCards;
 
-    /**
-     * 出せるカードを管理する
-     */
+    /** 出せるカードを管理する */
     private List<Card> candidatingCardList;
 
     /**
      * 七並べを実行する
      * 
      * @param
-     * @throws SystemException 停止の必要があるエラーが発生した場合にスローする
      * @return
+     * @throws SystemException 停止の必要があるエラーが発生した場合にスローする
      */
     @Override
     public void run() throws SystemException {
-        System.out.println("七並べを開始します");
+        System.out.println(MessageLoader.loadMessage("sevens.start"));
         this.initialize();
-        System.out.println("プレイヤーの人数を決定します");
+        System.out.println(MessageLoader.loadMessage("sevens.input.player.number"));
         this.playerList = PlayerFactory.createPlayer();
-        System.out.println("トランプを配ります");
+        System.out.println(MessageLoader.loadMessage("sevens.deal"));
         this.dealCard();
-        System.out.println("7のカードを並べます");
+        System.out.println(MessageLoader.loadMessage("sevens.layout.initialize"));
         this.initializeLayout();
 
         while (!this.playerList.isEmpty()) {
@@ -70,6 +58,7 @@ public class Sevens implements Game {
                 this.seekCandidatingCard();
                 this.printLayout();
                 Card pullOutCard = player.selectCard(this.candidatingCardList);
+
                 if (pullOutCard == null) {
                     if (player.getPassNum() == 0) {
                         for (Card card : player.getHand()) {
@@ -80,7 +69,7 @@ public class Sevens implements Game {
                         throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
                     }
                 } else if (pullOutCard.equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
-                    System.out.println("ジョーカーを出す場所を指定してください");
+                    System.out.println(MessageLoader.loadMessage("sevens.select.joker"));
                     for (int i = 1; i <= this.candidatingCardList.size(); i++) {
                         System.out.print(i + "\t");
                     }
@@ -91,7 +80,7 @@ public class Sevens implements Game {
                     for (Card card : this.candidatingCardList) {
                         System.out.print(card.getNumber().getValue() + "\t");
                     }
-                    int index = Input.inputInt(1, this.candidatingCardList.size());
+                    int index = Keyboard.inputInt(1, this.candidatingCardList.size());
                     this.layout.get(pullOutCard.getMark())[index] = pullOutCard;
                 } else {
                     if (this.layout.get(pullOutCard.getMark())[pullOutCard.getNumber().getValue() - 1]
@@ -111,15 +100,21 @@ public class Sevens implements Game {
      * 
      * @param player
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
-    private void finish(Player player) {
-        if (player.isFinished()) {
-            this.order.put(this.playerList.size(), player);
-            this.playerList.remove(player);
-            if (this.playerList.size() == 1) {
-                this.order.put(1, this.playerList.get(0));
-                this.playerList.remove(0);
+    private void finish(Player player) throws SystemException {
+        try {
+            if (player.isFinished()) {
+                this.order.put(this.playerList.size(), player);
+                this.playerList.remove(player);
+                if (this.playerList.size() == 1) {
+                    this.order.put(1, this.playerList.get(0));
+                    this.playerList.remove(0);
+                }
             }
+        } catch (IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
+                | NullPointerException e) {
+            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
         }
     }
 
@@ -128,43 +123,51 @@ public class Sevens implements Game {
      * 
      * @param
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
-    private void seekCandidatingCard() {
-        for (Mark mark : Mark.values()) {
-            if (!mark.equals(Mark.JOKER)) {
-                for (int left = 6; left >= 0; left--) {
-                    Card card = this.allCards.get(mark).get(Number.getEnum(left + 1));
-                    if (this.layout.get(mark)[left] == null) {
-                        if (!this.candidatingCardList.contains(card)) {
-                            this.candidatingCardList.add(card);
-                        }
-                    } else if (this.layout.get(mark)[left].equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
-                        if (!this.candidatingCardList.contains(card)) {
-                            this.candidatingCardList.add(card);
-                        }
-                    } else {
-                        if (this.candidatingCardList.contains(card)) {
-                            this.candidatingCardList.remove(card);
+    private void seekCandidatingCard() throws SystemException {
+        try {
+            for (Mark mark : Mark.values()) {
+                if (!mark.equals(Mark.JOKER)) {
+                    for (int left = 6; left >= 0; left--) {
+                        Card card = this.allCards.get(mark).get(Number.getEnum(left + 1));
+                        if (this.layout.get(mark)[left] == null) {
+                            if (!this.candidatingCardList.contains(card)) {
+                                this.candidatingCardList.add(card);
+                            }
+                        } else if (this.layout.get(mark)[left]
+                                .equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
+                            if (!this.candidatingCardList.contains(card)) {
+                                this.candidatingCardList.add(card);
+                            }
+                        } else {
+                            if (this.candidatingCardList.contains(card)) {
+                                this.candidatingCardList.remove(card);
+                            }
                         }
                     }
-                }
-                for (int right = 6; right <= 12; right++) {
-                    Card card = this.allCards.get(mark).get(Number.getEnum(right + 1));
-                    if (this.layout.get(mark)[right] == null) {
-                        if (!this.candidatingCardList.contains(card)) {
-                            this.candidatingCardList.add(card);
-                        }
-                    } else if (this.layout.get(mark)[right].equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
-                        if (!this.candidatingCardList.contains(card)) {
-                            this.candidatingCardList.add(card);
-                        }
-                    } else {
-                        if (this.candidatingCardList.contains(card)) {
-                            this.candidatingCardList.remove(card);
+                    for (int right = 6; right <= 12; right++) {
+                        Card card = this.allCards.get(mark).get(Number.getEnum(right + 1));
+                        if (this.layout.get(mark)[right] == null) {
+                            if (!this.candidatingCardList.contains(card)) {
+                                this.candidatingCardList.add(card);
+                            }
+                        } else if (this.layout.get(mark)[right]
+                                .equals(this.allCards.get(Mark.JOKER).get(Number.JOKER))) {
+                            if (!this.candidatingCardList.contains(card)) {
+                                this.candidatingCardList.add(card);
+                            }
+                        } else {
+                            if (this.candidatingCardList.contains(card)) {
+                                this.candidatingCardList.remove(card);
+                            }
                         }
                     }
                 }
             }
+        } catch (IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException | NullPointerException
+                | IllegalArgumentException e) {
+            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
         }
     }
 
@@ -210,14 +213,15 @@ public class Sevens implements Game {
      * 場を初期化する
      * 
      * @param
-     * @throws SystemException
      * @return
+     * @throws SystemException
      */
     private void initializeLayout() throws SystemException {
-        for (Player player : this.playerList) {
-            List<Card> hand = player.getHand();
-            for (int i = 0; i < hand.size(); i++) {
-                try {
+        try {
+            for (Player player : this.playerList) {
+                List<Card> hand = player.getHand();
+                for (int i = 0; i < hand.size(); i++) {
+
                     Card card = hand.get(i);
                     if (card.getNumber().equals(Number.SEVEN)) {
                         Mark mark = Mark.getEnum(card.getMark().getValue());
@@ -239,11 +243,12 @@ public class Sevens implements Game {
                         }
                         hand.remove(i);
                     }
-                } catch (IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
-                        | NullPointerException | IllegalArgumentException e) {
-                    throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
                 }
+
             }
+        } catch (IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
+                | NullPointerException | IllegalArgumentException e) {
+            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
         }
     }
 
@@ -251,14 +256,14 @@ public class Sevens implements Game {
      * トランプをプレイヤーに配る
      * 
      * @param
-     * @throws SystemException 不明なエラーが発生した場合にスローする
      * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
      */
     private void dealCard() throws SystemException {
-        List<Card> deck = CardFactory.getDeck();
-        List<List<Card>> handList = new ArrayList<>();
-
         try {
+            List<Card> deck = CardFactory.getDeck();
+            List<List<Card>> handList = new ArrayList<>();
+
             for (Card card : deck) {
                 this.allCards.get(card.getMark()).put(card.getNumber(), card);
             }

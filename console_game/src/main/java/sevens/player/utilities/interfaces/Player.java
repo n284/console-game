@@ -1,6 +1,7 @@
 package sevens.player.utilities.interfaces;
 
 import java.util.List;
+
 import sevens.card.objects.Card;
 import utilities.exceptions.SystemException;
 
@@ -8,6 +9,32 @@ import utilities.exceptions.SystemException;
  * プレイヤーのインターフェース
  */
 public interface Player {
+    /**
+     * 完了しているか確認する
+     * 
+     * @param
+     * @return boolean
+     */
+    public boolean isFinished();
+
+    /**
+     * 手札からカードを選択する
+     * 
+     * @param candidatingCardList
+     * @return {@link Card}
+     * @throws SystemException 不明なエラーが発生した場合にスローする
+     */
+    public Card selectCard(List<Card> candidatingCardList) throws SystemException;
+
+    /**
+     * パスする
+     * 
+     * @param
+     * @return
+     * @throws SystemException 不明なエラーが発生した場合にスローする
+     */
+    public void pass() throws SystemException;
+
     /**
      * nameフィールドのゲッター
      * 
@@ -39,30 +66,4 @@ public interface Player {
      * @return int
      */
     public int getPassNum();
-
-    /**
-     * 完了しているか確認する
-     * 
-     * @param
-     * @return boolean
-     */
-    public boolean isFinished();
-
-    /**
-     * 手札からカードを選択する
-     * 
-     * @param candidatingCardList
-     * @throws SystemException 不明なエラーが発生した場合にスローする
-     * @return {@link Card}
-     */
-    public Card selectCard(List<Card> candidatingCardList) throws SystemException;
-
-    /**
-     * パスする
-     * 
-     * @param
-     * @return
-     */
-    public void pass();
-
 }
