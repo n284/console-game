@@ -4,7 +4,16 @@ import utilities.MessageLoader;
 import utilities.exceptions.SystemException;
 import utilities.interfaces.Game;
 
+/**
+ * ゲームを管理するメインクラス
+ */
 public class Menu {
+    /**
+     * メインメソッド
+     * 
+     * @param args
+     * @return
+     */
     public static void main(String[] args) {
         try {
             int continued;
