@@ -8,14 +8,37 @@ import java.util.Properties;
 
 import utilities.exceptions.SystemException;
 
+/**
+ * メッセージを読み込むクラス
+ */
 public class MessageLoader {
-    private static final String MESSAGE_PROPERTIES_FILE_PATH = "../../resources/message.properties";
-    private static Properties properties = new Properties();
-    private static boolean setuped = false;
+    /** message.propertiesが配置されているパス */
+    private static final String MESSAGE_PROPERTIES_PATH = "../../resources/message.properties";
 
+    /** プロパティズ */
+    private static Properties properties;
+
+    /** 初期処理済みを表す */
+    private static boolean setuped;
+
+    /**
+     * static イニシャライザ
+     */
+    static {
+        MessageLoader.properties = new Properties();
+        MessageLoader.setuped = false;
+    }
+
+    /**
+     * 初期化処理
+     * 
+     * @param
+     * @return
+     * @throws SystemException 処理の中断が必要な場合にスローする
+     */
     private static void setup() throws SystemException {
         try {
-            MessageLoader.properties.load(new FileInputStream(MESSAGE_PROPERTIES_FILE_PATH));
+            MessageLoader.properties.load(new FileInputStream(MESSAGE_PROPERTIES_PATH));
             MessageLoader.setuped = true;
         } catch (SecurityException e) {
             throw new SystemException(500, "message.propertiesのセキュリティエラーが発生しました");
@@ -30,21 +53,32 @@ public class MessageLoader {
         }
     }
 
+    /**
+     * 引数のキーに対応するメッセージを取得する
+     * 
+     * @param messageCode
+     * @return {@link String}
+     * @throws SystemException 処理の中断が必要な場合にスローする
+     */
     public static String loadMessage(String messageCode) throws SystemException {
         if (MessageLoader.setuped) {
             MessageLoader.setup();
-        } else {
-
         }
 
         return MessageLoader.properties.getProperty(messageCode);
     }
 
+    /**
+     * 引数のキーに対応するメッセージに値を挿入して取得する
+     * 
+     * @param messageCode
+     * @param params
+     * @return {@link String}
+     * @throws SystemException 処理の中断が必要な場合にスローする
+     */
     public static String loadMessage(String messageCode, Integer... params) throws SystemException {
         if (MessageLoader.setuped) {
             MessageLoader.setup();
-        } else {
-
         }
 
         try {
