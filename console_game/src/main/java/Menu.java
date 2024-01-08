@@ -1,25 +1,19 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
+import sevens.Sevens;
 import utilities.Keyboard;
 import utilities.MessageLoader;
-import utilities.exceptions.ApplicationException;
 import utilities.exceptions.SystemException;
 import utilities.interfaces.Game;
 
 public class Menu {
     public static void main(String[] args) {
-        int mode;
-        int continued;
-        Game game;
-
         try {
+            int continued;
+            Game game;
+
             while (true) {
                 System.out.print(MessageLoader.loadMessage("menu.select"));
                 while (true) {
-                    mode = Keyboard.inputInt(1, 2);
-                    switch (mode) {
+                    switch (Keyboard.inputInt(1, 2)) {
                         case 1: {
                             game = new Sevens();
                             break;
@@ -28,14 +22,17 @@ public class Menu {
                             throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
                         }
                     }
+                    break;
                 }
                 game.run();
                 continued = Keyboard.inputInt(0, 1);
                 if (continued == 1) {
-
-                } else {
+                    continue;
+                } else if (continued == 0) {
                     System.out.println(MessageLoader.loadMessage("menu.finish"));
                     break;
+                } else {
+                    throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
                 }
             }
         } catch (SystemException e) {
