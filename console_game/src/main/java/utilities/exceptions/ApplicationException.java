@@ -4,9 +4,6 @@ package utilities.exceptions;
  * 任意で例外を発生させたい場合に使用する非検査例外クラス
  */
 public class ApplicationException extends RuntimeException {
-    /** エラーコードを保持する */
-    private int errorCode;
-
     /** メッセージを保持する */
     private String message;
 
@@ -16,19 +13,8 @@ public class ApplicationException extends RuntimeException {
      * @param errorCode
      * @param message
      */
-    public ApplicationException(int errorCode, String message) {
-        this.errorCode = errorCode;
+    public ApplicationException(String message) {
         this.message = message;
-    }
-
-    /**
-     * errorCodeフィールドのゲッター
-     * 
-     * @param
-     * @return int
-     */
-    public int getErrorCode() {
-        return this.errorCode;
     }
 
     /**

@@ -30,7 +30,7 @@ public class Keyboard {
                 }
             }
         } catch (IOException e) {
-            throw new SystemException(500, MessageLoader.loadMessage("error.input"));
+            throw new SystemException(MessageLoader.loadMessage("error.input"));
         }
     }
 
@@ -44,10 +44,11 @@ public class Keyboard {
      */
     public static int inputInt(int from, int to) throws SystemException {
         if (from > to) {
-            throw new SystemException(300, MessageLoader.loadMessage("error.fromto"));
+            throw new SystemException(MessageLoader.loadMessage("error.from.to"));
         }
+
         while (true) {
-            // System.out.println(MessageLoader.loadMessage("input.range", from, to));
+            System.out.println(MessageLoader.loadMessage("input.range", from, to));
             int number = Keyboard.inputInt();
 
             if (from <= number && number <= to) {
@@ -61,6 +62,7 @@ public class Keyboard {
     /**
      * 文字列を入力させる
      * 
+     * @param
      * @return
      * @throws SystemException
      */
@@ -68,7 +70,7 @@ public class Keyboard {
         try {
             return br.readLine();
         } catch (IOException e) {
-            throw new SystemException(500, MessageLoader.loadMessage("error.input"));
+            throw new SystemException(MessageLoader.loadMessage("error.input"));
         }
     }
 }
