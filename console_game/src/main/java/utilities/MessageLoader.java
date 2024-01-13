@@ -17,18 +17,10 @@ public class MessageLoader {
     private static final String MESSAGE_PROPERTIES_PATH = "./console_game/src/main/resources/message.properties";
 
     /** プロパティズ */
-    private static Properties properties;
+    private static Properties properties = new Properties();
 
     /** 初期処理済みを表す */
-    private static boolean setuped;
-
-    /**
-     * static イニシャライザ
-     */
-    static {
-        MessageLoader.properties = new Properties();
-        MessageLoader.setuped = false;
-    }
+    private static boolean setuped = false;
 
     /**
      * 初期化処理
@@ -42,15 +34,15 @@ public class MessageLoader {
             MessageLoader.properties.load(new InputStreamReader(new FileInputStream(MESSAGE_PROPERTIES_PATH), "UTF-8"));
             MessageLoader.setuped = true;
         } catch (SecurityException e) {
-            throw new SystemException(500, "message.propertiesのセキュリティエラーが発生しました");
+            throw new SystemException("message.propertiesのセキュリティエラーが発生しました");
         } catch (FileNotFoundException e) {
-            throw new SystemException(500, "message.propertiesが見つかりませんでした");
+            throw new SystemException("message.propertiesが見つかりませんでした");
         } catch (IOException e) {
-            throw new SystemException(500, "入力エラーが発生しました");
+            throw new SystemException("入力エラーが発生しました");
         } catch (IllegalArgumentException e) {
-            throw new SystemException(500, "message.properties内に不正な文字が含まれています");
+            throw new SystemException("message.properties内に不正な文字が含まれています");
         } catch (NullPointerException e) {
-            throw new SystemException(500, "message.propertiesが見つかりませんでした");
+            throw new SystemException("message.propertiesが見つかりませんでした");
         }
     }
 
@@ -78,16 +70,16 @@ public class MessageLoader {
      * @throws SystemException 処理の中断が必要な場合にスローする
      */
     public static String loadMessage(String messageCode, Object... params) throws SystemException {
-        if (MessageLoader.setuped) {
-            MessageLoader.setup();
-        }
-
         try {
+            if (MessageLoader.setuped) {
+                MessageLoader.setup();
+            }
+
             return MessageFormat.format(MessageLoader.properties.getProperty(messageCode), params);
         } catch (NullPointerException e) {
-            throw new SystemException(500, "メッセージが取得できませんでした");
+            throw new SystemException("メッセージが取得できませんでした");
         } catch (IllegalArgumentException e) {
-            throw new SystemException(500, "メッセージにパラメータが無いか、パラメータが適切ではありません");
+            throw new SystemException("メッセージにパラメータが無いか、パラメータが適切ではありません");
         }
     }
 }

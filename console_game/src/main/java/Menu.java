@@ -16,34 +16,30 @@ public class Menu {
      */
     public static void main(String[] args) {
         try {
-            int continued;
+            boolean continued;
             Game game;
 
             while (true) {
                 System.out.print(MessageLoader.loadMessage("menu.select"));
-                while (true) {
-                    switch (Keyboard.inputInt(1, 1)) {
-                        case 1: {
-                            game = new Sevens();
-                            break;
-                        }
-                        default: {
-                            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
-                        }
+                switch (Keyboard.inputInt(1, 1)) {
+                    case 1: {
+                        game = new Sevens();
+                        break;
                     }
-                    break;
+                    default: {
+                        throw new SystemException(MessageLoader.loadMessage("error.unknown"));
+                    }
                 }
+
                 game.run();
                 System.out.println(MessageLoader.loadMessage("menu.continue"));
-                continued = Keyboard.inputInt(0, 1);
-                if (continued == 1) {
-                    System.out.println();
+                continued = Keyboard.inputInt(0, 1) == 1 ? true : false;
+
+                if (continued) {
                     continue;
-                } else if (continued == 0) {
+                } else {
                     System.out.println(MessageLoader.loadMessage("menu.finish"));
                     break;
-                } else {
-                    throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
                 }
             }
         } catch (SystemException e) {
