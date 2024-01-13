@@ -16,7 +16,6 @@ import utilities.exceptions.SystemException;
  * プレイヤーを管理するクラス
  */
 public class PlayerFactory {
-
     /**
      * 七並べを行うプレイヤーを生成する
      * 
@@ -28,8 +27,10 @@ public class PlayerFactory {
         List<Player> playerList = new ArrayList<>();
         PlayerFactory.createHumanPlayer(playerList);
 
-        if (playerList.size() < 4) {
+        if (playerList.size() < SettingLoader.loadSetting("sevens.player.max")) {
             createCPUPlayer(playerList);
+        } else {
+            System.out.println(MessageLoader.loadMessage("sevens.create.cpu.skip"));
         }
         System.out.println(MessageLoader.loadMessage("sevens.order.player"));
         Collections.shuffle(playerList);
@@ -46,8 +47,7 @@ public class PlayerFactory {
      */
     private static void createCPUPlayer(List<Player> playerList) throws SystemException {
         System.out.println(MessageLoader.loadMessage("sevens.input.cpu"));
-        int number = Keyboard.inputInt(1,
-                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max")) - playerList.size());
+        int number = Keyboard.inputInt(1, SettingLoader.loadSetting("sevens.player.max") - playerList.size());
         for (int i = 0; i < number; i++) {
             playerList.add(new CPUPlayer(MessageLoader.loadMessage("sevens.name.cpu", i + 1)));
         }
@@ -62,8 +62,7 @@ public class PlayerFactory {
      */
     private static void createHumanPlayer(List<Player> playerList) throws SystemException {
         System.out.println(MessageLoader.loadMessage("sevens.input.human"));
-        int number = Keyboard.inputInt(1,
-                Integer.parseInt(SettingLoader.loadSetting("sevens.player.max")) - playerList.size());
+        int number = Keyboard.inputInt(1, SettingLoader.loadSetting("sevens.player.max"));
         for (int i = 0; i < number; i++) {
             System.out.println(MessageLoader.loadMessage("sevens.name.human", i + 1));
             playerList.add(new HumanPlayer(Keyboard.inputString()));

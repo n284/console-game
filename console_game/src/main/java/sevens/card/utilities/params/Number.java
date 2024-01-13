@@ -19,9 +19,7 @@ public enum Number {
     KING(13),
     JOKER(0);
 
-    /**
-     * 数字を表す
-     */
+    /** 数字を表す */
     private int number;
 
     /**
@@ -57,5 +55,16 @@ public enum Number {
         }
 
         return null;
+    }
+
+    /**
+     * 文字列に変換
+     * 
+     * @param
+     * @return {@link String}
+     */
+    @Override
+    public String toString() {
+        return String.valueOf(this.number);
     }
 }

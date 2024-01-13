@@ -10,9 +10,7 @@ public enum Mark {
     DAIAMOND("D"),
     JOKER("J");
 
-    /**
-     * マークを表す
-     */
+    /** マークを表す */
     private String mark;
 
     /**
@@ -48,5 +46,16 @@ public enum Mark {
         }
 
         return null;
+    }
+
+    /**
+     * 文字列に変換
+     * 
+     * @param
+     * @return {@link String}
+     */
+    @Override
+    public String toString() {
+        return this.mark;
     }
 }

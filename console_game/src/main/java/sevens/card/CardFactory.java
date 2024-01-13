@@ -24,25 +24,20 @@ public class CardFactory {
      * @return {@link List <{@link Card}>
      */
     private static List<Card> initialize() throws SystemException {
-        try {
-            List<Card> deck = new ArrayList<>();
-            List<Mark> markList = new ArrayList<>(Arrays.asList(Mark.values()));
-            List<Number> numberList = new ArrayList<>(Arrays.asList(Number.values()));
-            markList.remove(Mark.JOKER);
-            numberList.remove(Number.JOKER);
+        List<Card> deck = new ArrayList<>();
+        List<Mark> markList = new ArrayList<>(Arrays.asList(Mark.values()));
+        List<Number> numberList = new ArrayList<>(Arrays.asList(Number.values()));
+        markList.remove(Mark.JOKER);
+        numberList.remove(Number.JOKER);
 
-            for (Mark mark : markList) {
-                for (Number number : numberList) {
-                    deck.add(new Card(number, mark));
-                }
+        for (Mark mark : markList) {
+            for (Number number : numberList) {
+                deck.add(new Card(number, mark));
             }
-            deck.add(new Card(Number.JOKER, Mark.JOKER));
-
-            return deck;
-        } catch (NullPointerException | IndexOutOfBoundsException | UnsupportedOperationException | ClassCastException
-                | IllegalArgumentException e) {
-            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
         }
+        deck.add(new Card(Number.JOKER, Mark.JOKER));
+
+        return deck;
     }
 
     /**
@@ -56,7 +51,7 @@ public class CardFactory {
         try {
             Collections.shuffle(deck);
         } catch (UnsupportedOperationException e) {
-            throw new SystemException(500, MessageLoader.loadMessage("error.unknown"));
+            throw new SystemException(MessageLoader.loadMessage("error.suffle"));
         }
     }
 

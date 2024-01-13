@@ -7,14 +7,10 @@ import sevens.card.utilities.params.Number;
  * トランプのカードを表すクラス
  */
 public class Card {
-    /**
-     * カードの数字を表す
-     */
+    /** カードの数字を表す */
     private Number number;
 
-    /**
-     * カードの絵柄を表す
-     */
+    /** カードの絵柄を表す */
     private Mark mark;
 
     /**
@@ -47,5 +43,16 @@ public class Card {
      */
     public Mark getMark() {
         return this.mark;
+    }
+
+    /**
+     * 文字列に変換
+     * 
+     * @param
+     * @return {@link String}
+     */
+    @Override
+    public String toString() {
+        return String.format("%s%s", this.mark, this.number);
     }
 }
